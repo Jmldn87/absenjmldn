@@ -86,7 +86,35 @@
   <!-- MAIN CONTAINER (FLUID RESPONSIVE) -->
   <main class="w-full max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-10 pt-3 sm:pt-5 space-y-3 sm:space-y-4">
 
-    <!-- CONTROL CARD (1 ROW ON LARGE DESKTOP, 2 ROWS ON MOBILE) -->
+    <!-- 1. SUMMARY STRIP (PALING DEPAN / ATAS) -->
+    <section class="grid grid-cols-6 gap-1.5 sm:gap-3">
+      <div class="bg-white dark:bg-[#111827] rounded-xl p-2 sm:p-3 border border-slate-200/80 dark:border-slate-800 text-center shadow-2xs">
+        <div id="statTotal" class="text-sm sm:text-xl font-extrabold text-slate-800 dark:text-white leading-tight">0</div>
+        <div class="text-[9px] sm:text-[11px] font-medium text-slate-400 mt-0.5">Total</div>
+      </div>
+      <div class="bg-white dark:bg-[#111827] rounded-xl p-2 sm:p-3 border border-slate-200/80 dark:border-slate-800 text-center shadow-2xs">
+        <div id="statH" class="text-sm sm:text-xl font-extrabold text-emerald-500 leading-tight">0</div>
+        <div class="text-[9px] sm:text-[11px] font-medium text-emerald-600/80 dark:text-emerald-400/80 mt-0.5">Hadir</div>
+      </div>
+      <div class="bg-white dark:bg-[#111827] rounded-xl p-2 sm:p-3 border border-slate-200/80 dark:border-slate-800 text-center shadow-2xs">
+        <div id="statS" class="text-sm sm:text-xl font-extrabold text-amber-500 leading-tight">0</div>
+        <div class="text-[9px] sm:text-[11px] font-medium text-amber-600/80 dark:text-amber-400/80 mt-0.5">Sakit</div>
+      </div>
+      <div class="bg-white dark:bg-[#111827] rounded-xl p-2 sm:p-3 border border-slate-200/80 dark:border-slate-800 text-center shadow-2xs">
+        <div id="statI" class="text-sm sm:text-xl font-extrabold text-sky-500 leading-tight">0</div>
+        <div class="text-[9px] sm:text-[11px] font-medium text-sky-600/80 dark:text-sky-400/80 mt-0.5">Izin</div>
+      </div>
+      <div class="bg-white dark:bg-[#111827] rounded-xl p-2 sm:p-3 border border-slate-200/80 dark:border-slate-800 text-center shadow-2xs">
+        <div id="statA" class="text-sm sm:text-xl font-extrabold text-rose-500 leading-tight">0</div>
+        <div class="text-[9px] sm:text-[11px] font-medium text-rose-600/80 dark:text-rose-400/80 mt-0.5">Alpa</div>
+      </div>
+      <div class="bg-white dark:bg-[#111827] rounded-xl p-2 sm:p-3 border border-slate-200/80 dark:border-slate-800 text-center shadow-2xs">
+        <div id="statBelum" class="text-sm sm:text-xl font-extrabold text-slate-400 leading-tight">0</div>
+        <div class="text-[9px] sm:text-[11px] font-medium text-slate-400 mt-0.5">Belum</div>
+      </div>
+    </section>
+
+    <!-- 2. CONTROL CARD (1 ROW ON LARGE DESKTOP, 2 ROWS ON MOBILE) -->
     <section class="bg-white dark:bg-[#111827] rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm">
       <div class="grid grid-cols-2 lg:grid-cols-12 gap-2.5 lg:items-end">
         <!-- Tanggal -->
@@ -133,35 +161,7 @@
       </div>
     </section>
 
-    <!-- SUMMARY STRIP -->
-    <section class="grid grid-cols-6 gap-1.5 sm:gap-3">
-      <div class="bg-white dark:bg-[#111827] rounded-xl p-2 sm:p-3 border border-slate-200/80 dark:border-slate-800 text-center">
-        <div id="statTotal" class="text-sm sm:text-xl font-extrabold text-slate-800 dark:text-white leading-tight">0</div>
-        <div class="text-[9px] sm:text-[11px] font-medium text-slate-400 mt-0.5">Total</div>
-      </div>
-      <div class="bg-white dark:bg-[#111827] rounded-xl p-2 sm:p-3 border border-slate-200/80 dark:border-slate-800 text-center">
-        <div id="statH" class="text-sm sm:text-xl font-extrabold text-emerald-500 leading-tight">0</div>
-        <div class="text-[9px] sm:text-[11px] font-medium text-emerald-600/80 dark:text-emerald-400/80 mt-0.5">Hadir</div>
-      </div>
-      <div class="bg-white dark:bg-[#111827] rounded-xl p-2 sm:p-3 border border-slate-200/80 dark:border-slate-800 text-center">
-        <div id="statS" class="text-sm sm:text-xl font-extrabold text-amber-500 leading-tight">0</div>
-        <div class="text-[9px] sm:text-[11px] font-medium text-amber-600/80 dark:text-amber-400/80 mt-0.5">Sakit</div>
-      </div>
-      <div class="bg-white dark:bg-[#111827] rounded-xl p-2 sm:p-3 border border-slate-200/80 dark:border-slate-800 text-center">
-        <div id="statI" class="text-sm sm:text-xl font-extrabold text-sky-500 leading-tight">0</div>
-        <div class="text-[9px] sm:text-[11px] font-medium text-sky-600/80 dark:text-sky-400/80 mt-0.5">Izin</div>
-      </div>
-      <div class="bg-white dark:bg-[#111827] rounded-xl p-2 sm:p-3 border border-slate-200/80 dark:border-slate-800 text-center">
-        <div id="statA" class="text-sm sm:text-xl font-extrabold text-rose-500 leading-tight">0</div>
-        <div class="text-[9px] sm:text-[11px] font-medium text-rose-600/80 dark:text-rose-400/80 mt-0.5">Alpa</div>
-      </div>
-      <div class="bg-white dark:bg-[#111827] rounded-xl p-2 sm:p-3 border border-slate-200/80 dark:border-slate-800 text-center">
-        <div id="statBelum" class="text-sm sm:text-xl font-extrabold text-slate-400 leading-tight">0</div>
-        <div class="text-[9px] sm:text-[11px] font-medium text-slate-400 mt-0.5">Belum</div>
-      </div>
-    </section>
-
-    <!-- SEARCH & FILTER PILLS (SIDE BY SIDE ON DESKTOP) -->
+    <!-- 3. SEARCH & FILTER PILLS (SIDE BY SIDE ON DESKTOP) -->
     <section class="flex flex-col md:flex-row md:items-center justify-between gap-2.5">
       <div class="relative flex-1">
         <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -178,7 +178,7 @@
       </div>
     </section>
 
-    <!-- STUDENT ATTENDANCE LIST (1 COL MOBILE, 2 COLS DESKTOP) -->
+    <!-- 4. STUDENT ATTENDANCE LIST (1 COL MOBILE, 2 COLS DESKTOP) -->
     <section id="studentListContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
       <!-- Rendered dynamically by JS -->
     </section>
@@ -321,8 +321,8 @@
             <span class="font-bold text-sm">Firebase Firestore Sync</span>
             <span id="settingsCloudStatus" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-200 dark:bg-slate-800">Mode Lokal</span>
           </div>
-          <p class="text-slate-500 dark:text-slate-400">Tempel kode <code class="text-blue-500">firebaseConfig</code> dari Firebase Console untuk menyinkronkan data otomatis antara HP dan Laptop.</p>
-          <textarea id="firebaseConfigInput" rows="5" placeholder='const firebaseConfig = { apiKey: "...", projectId: "...", ... };' class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-[#1a2234] border border-slate-200 dark:border-slate-700 font-mono text-[11px] focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+          <p class="text-slate-500 dark:text-slate-400">Tempel kode <code class="text-blue-500">firebaseConfig</code> langsung dari Firebase Console untuk menyinkronkan data otomatis antara HP dan Laptop.</p>
+          <textarea id="firebaseConfigInput" rows="6" placeholder='const firebaseConfig = { apiKey: "...", projectId: "...", ... };' class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-[#1a2234] border border-slate-200 dark:border-slate-700 font-mono text-[11px] focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
           <div class="flex flex-wrap gap-2">
             <button onclick="saveAndConnectFirebase()" class="flex-1 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold">Simpan & Hubungkan</button>
             <button onclick="pushLocalToCloud()" id="btnPushCloud" class="hidden py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">Push Lokal ke Cloud</button>
@@ -460,12 +460,14 @@
       }
     }
 
+    // PARSER YANG SUDAH DIPERBAIKI (AMAN UNTUK URL & APPID)
     function parseFirebaseConfig(rawText) {
       let cleaned = rawText.trim();
       const match = cleaned.match(/\{[\s\S]*\}/);
       if (!match) throw new Error("Format objek { ... } tidak ditemukan.");
       cleaned = match[0];
-      cleaned = cleaned.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?\s*:/g, '"$2":');
+      // Hanya memberi tanda kutip pada nama properti di awal baris / setelah koma
+      cleaned = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
       cleaned = cleaned.replace(/'/g, '"');
       cleaned = cleaned.replace(/,\s*}/g, '}');
       return JSON.parse(cleaned);
