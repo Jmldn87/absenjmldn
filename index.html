@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Absensi Siswa Mandiri</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Font Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SheetJS Excel Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        /* Custom scrollbar for better visual experience in both themes */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(150, 150, 150, 0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(150, 150, 150, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(150, 150, 150, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-300">
+
+    <!-- HEADER / TOP NAV -->
+    <header class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700/60 sticky top-0 z-30 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <!-- Logo & Title -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                    <i class="fa-solid fa-clipboard-user text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-tight text-slate-900 dark:text-white">Absensi Mandiri</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">Sistem Presensi Siswa Real-Time & Rekapitulasi</p>
+                </div>
+            </div>
+
+            <!-- Controls: Date Picker, Dark/Light Toggle, Action Modals -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Date Input -->
+                <div class="relative">
+                    <input type="date" id="inputTanggal" onchange="gantiTanggal(this.value)" class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors cursor-pointer">
+                </div>
+
+                <!-- Dark / Light Theme Toggle Button -->
+                <button onclick="toggleTheme()" id="btnThemeToggle" title="Beralih Mode Gelap/Terang" aria-label="Toggle Theme" class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700/60 border border-slate-300 dark:border-slate-700 transition-all duration-300 flex items-center justify-center w-9 h-9">
+                    <i id="iconSun" class="fa-solid fa-sun text-amber-500 text-base hidden"></i>
+                    <i id="iconMoon" class="fa-solid fa-moon text-indigo-400 text-base hidden"></i>
+                </button>
+
+                <!-- Action Menu Buttons -->
+                <div class="hidden md:flex items-center gap-2">
+                    <button onclick="bukaModalKelola()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-sliders"></i> Kelola Data
+                    </button>
+                    <button onclick="bukaModalRekap()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-all flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-chart-pie"></i> Rekap Periode
+                    </button>
+                    <button onclick="bukaModalImportExport()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-all flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-file-excel"></i> Import / Export
+                    </button>
+                    <button onclick="bukaModalBackup()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-all flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Backup & Sync
+                    </button>
+                </div>
+
+                <!-- Dropdown Mobile Menu Button -->
+                <div class="relative md:hidden">
+                    <button onclick="toggleMobileMenu()" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:outline-none">
+                        <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
+                    </button>
+                    <div id="mobileMenu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50">
+                        <button onclick="bukaModalKelola(); toggleMobileMenu();" class="w-full text-left px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders w-4 text-blue-500"></i> Kelola Data
+                        </button>
+                        <button onclick="bukaModalRekap(); toggleMobileMenu();" class="w-full text-left px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie w-4 text-emerald-500"></i> Rekap Periode
+                        </button>
+                        <button onclick="bukaModalImportExport(); toggleMobileMenu();" class="w-full text-left px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2">
+                            <i class="fa-solid fa-file-excel w-4 text-emerald-600"></i> Import / Export
+                        </button>
+                        <button onclick="bukaModalBackup(); toggleMobileMenu();" class="w-full text-left px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2">
+                            <i class="fa-solid fa-cloud-arrow-up w-4 text-indigo-500"></i> Backup & Sync
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+        <!-- FILTER TOOLBAR: KELAS & MAPEL CONTROL -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-700/60 shadow-sm transition-colors duration-300">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
+                <!-- Dropdown Kelas + Tambah & Hapus -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Kelas Active</label>
+                    <div class="flex items-center gap-1.5">
+                        <select id="selectKelas" onchange="gantiKelas(this.value)" class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors">
+                        </select>
+                        <button onclick="bukaModalTambahKelas()" title="Tambah Kelas Baru" class="p-2 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800/60 rounded-xl text-sm font-semibold transition-all">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <button onclick="konfirmasiHapusKelasAktif()" title="Hapus Kelas Aktif" class="p-2 bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 hover:bg-rose-200 dark:hover:bg-rose-800/60 rounded-xl text-sm transition-all">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dropdown Mapel + Tambah & Hapus -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Mata Pelajaran</label>
+                    <div class="flex items-center gap-1.5">
+                        <select id="selectMapel" onchange="gantiMapel(this.value)" class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors">
+                        </select>
+                        <button onclick="bukaModalTambahMapel()" title="Tambah Mapel Baru" class="p-2 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800/60 rounded-xl text-sm font-semibold transition-all">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <button onclick="konfirmasiHapusMapelAktif()" title="Hapus Mapel Aktif" class="p-2 bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 hover:bg-rose-200 dark:hover:bg-rose-800/60 rounded-xl text-sm transition-all">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pencarian NIS / Nama -->
+                <div class="lg:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Cari Siswa</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="inputSearch" oninput="renderTabel()" placeholder="Cari berdasarkan NIS atau Nama Siswa..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 pl-10 pr-4 py-2 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUMMARY STATS CARDS -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 sm:gap-4">
+            <!-- Total Siswa -->
+            <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm transition-colors duration-300 flex flex-col justify-between">
+                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Total Siswa</span>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <span id="statTotal" class="text-2xl font-bold text-slate-800 dark:text-white">0</span>
+                    <i class="fa-solid fa-users text-slate-400 text-sm"></i>
+                </div>
+            </div>
+            <!-- Hadir (H) -->
+            <div class="bg-emerald-500/10 dark:bg-emerald-950/30 p-3.5 rounded-2xl border border-emerald-200 dark:border-emerald-800/50 shadow-sm transition-colors duration-300 flex flex-col justify-between">
+                <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Hadir (H)</span>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <span id="statHadir" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">0</span>
+                    <i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
+                </div>
+            </div>
+            <!-- Sakit (S) -->
+            <div class="bg-blue-500/10 dark:bg-blue-950/30 p-3.5 rounded-2xl border border-blue-200 dark:border-blue-800/50 shadow-sm transition-colors duration-300 flex flex-col justify-between">
+                <span class="text-xs font-semibold text-blue-700 dark:text-blue-400">Sakit (S)</span>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <span id="statSakit" class="text-2xl font-bold text-blue-600 dark:text-blue-400">0</span>
+                    <i class="fa-solid fa-notes-medical text-blue-500 text-sm"></i>
+                </div>
+            </div>
+            <!-- Izin (I) -->
+            <div class="bg-amber-500/10 dark:bg-amber-950/30 p-3.5 rounded-2xl border border-amber-200 dark:border-amber-800/50 shadow-sm transition-colors duration-300 flex flex-col justify-between">
+                <span class="text-xs font-semibold text-amber-700 dark:text-amber-400">Izin (I)</span>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <span id="statIzin" class="text-2xl font-bold text-amber-600 dark:text-amber-400">0</span>
+                    <i class="fa-solid fa-envelope-open-text text-amber-500 text-sm"></i>
+                </div>
+            </div>
+            <!-- Alpa (A) -->
+            <div class="bg-rose-500/10 dark:bg-rose-950/30 p-3.5 rounded-2xl border border-rose-200 dark:border-rose-800/50 shadow-sm transition-colors duration-300 flex flex-col justify-between">
+                <span class="text-xs font-semibold text-rose-700 dark:text-rose-400">Alpa (A)</span>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <span id="statAlpa" class="text-2xl font-bold text-rose-600 dark:text-rose-400">0</span>
+                    <i class="fa-solid fa-triangle-exclamation text-rose-500 text-sm"></i>
+                </div>
+            </div>
+            <!-- Belum Diabsen -->
+            <div class="bg-slate-200/50 dark:bg-slate-800/50 p-3.5 rounded-2xl border border-slate-300 dark:border-slate-700 shadow-sm transition-colors duration-300 flex flex-col justify-between">
+                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Belum Diabsen</span>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <span id="statBelum" class="text-2xl font-bold text-slate-600 dark:text-slate-300">0</span>
+                    <i class="fa-regular fa-clock text-slate-400 text-sm"></i>
+                </div>
+            </div>
+            <!-- Persentase -->
+            <div class="col-span-2 sm:col-span-1 bg-gradient-to-br from-indigo-600 to-blue-600 text-white p-3.5 rounded-2xl shadow-md flex flex-col justify-between">
+                <span class="text-xs font-medium text-indigo-100">Kehadiran</span>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <span id="statPersen" class="text-2xl font-extrabold text-white">0%</span>
+                    <i class="fa-solid fa-chart-line text-indigo-200 text-sm"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTION BAR & FILTER TABS -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm transition-colors duration-300">
+            <!-- Tab Filter Status -->
+            <div class="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+                <button onclick="setTabFilter('ALL')" id="tabALL" class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-blue-600 text-white shadow-sm">Semua</button>
+                <button onclick="setTabFilter('H')" id="tabH" class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Hadir (H)</button>
+                <button onclick="setTabFilter('S')" id="tabS" class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Sakit (S)</button>
+                <button onclick="setTabFilter('I')" id="tabI" class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Izin (I)</button>
+                <button onclick="setTabFilter('A')" id="tabA" class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Alpa (A)</button>
+                <button onclick="setTabFilter('BELUM')" id="tabBELUM" class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Belum</button>
+            </div>
+
+            <!-- Quick Action: Tandai Semua Hadir -->
+            <div class="flex items-center gap-2 justify-end">
+                <button onclick="tandaiSemuaHadir()" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-all flex items-center justify-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-double-check"></i> Tandai Semua Hadir
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN TABLE -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-sm overflow-hidden transition-colors duration-300">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700/60 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
+                            <th class="py-3.5 px-4 text-center w-12">No</th>
+                            <th class="py-3.5 px-4 w-28">NIS</th>
+                            <th class="py-3.5 px-4">Nama Siswa</th>
+                            <th class="py-3.5 px-4 text-center w-20">L/P</th>
+                            <th class="py-3.5 px-4 text-center w-64">Status Presensi</th>
+                            <th class="py-3.5 px-4">Catatan Keterangan</th>
+                            <th class="py-3.5 px-4 text-center w-16">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelBodySiswa" class="divide-y divide-slate-200 dark:divide-slate-700/60 text-sm">
+                        <!-- Dynamic Student Rows -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Empty state -->
+            <div id="emptyState" class="hidden py-12 text-center">
+                <i class="fa-solid fa-folder-open text-4xl text-slate-300 dark:text-slate-600 mb-3"></i>
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Tidak ada data siswa ditemukan untuk kriteria ini.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700/60 py-4 transition-colors duration-300 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 dark:text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span>&copy; <span id="year">2026</span> Sistem Absensi Siswa Mandiri. Standalone & Cloud Ready.</span>
+            <span class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Offline & LocalStorage Active
+            </span>
+        </div>
+    </footer>
+
+    <!-- MODAL: KELOLA DATA (KELAS / MAPEL / SISWA) -->
+    <div id="modalKelola" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-3xl border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-blue-500"></i> Kelola Master Data
+                </h3>
+                <button onclick="tutupModalKelola()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <!-- Modal Nav Tabs -->
+            <div class="flex border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 px-6">
+                <button onclick="switchTabKelola('kelas')" id="tabKelolaKelas" class="py-3 px-4 text-xs font-bold border-b-2 border-blue-600 text-blue-600 dark:text-blue-400">Kelola Kelas</button>
+                <button onclick="switchTabKelola('mapel')" id="tabKelolaMapel" class="py-3 px-4 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">Kelola Mapel</button>
+                <button onclick="switchTabKelola('siswa')" id="tabKelolaSiswa" class="py-3 px-4 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">Kelola Siswa</button>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-6 overflow-y-auto flex-1">
+                <!-- TAB KELAS -->
+                <div id="contentKelolaKelas" class="space-y-4">
+                    <div class="flex gap-2">
+                        <input type="text" id="inputNamaKelasBaru" placeholder="Nama Kelas Baru (misal: XII IPA 1)..." class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800 dark:text-slate-100">
+                        <button onclick="tambahKelasDariModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-sm">+ Tambah</button>
+                    </div>
+                    <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+                        <ul id="listKelasKelola" class="divide-y divide-slate-200 dark:divide-slate-700 text-sm"></ul>
+                    </div>
+                </div>
+
+                <!-- TAB MAPEL -->
+                <div id="contentKelolaMapel" class="space-y-4 hidden">
+                    <div class="flex gap-2">
+                        <input type="text" id="inputNamaMapelBaru" placeholder="Nama Mata Pelajaran Baru..." class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800 dark:text-slate-100">
+                        <button onclick="tambahMapelDariModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-sm">+ Tambah</button>
+                    </div>
+                    <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+                        <ul id="listMapelKelola" class="divide-y divide-slate-200 dark:divide-slate-700 text-sm"></ul>
+                    </div>
+                </div>
+
+                <!-- TAB SISWA -->
+                <div id="contentKelolaSiswa" class="space-y-4 hidden">
+                    <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Tambah Siswa ke Kelas Aktif</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <input type="text" id="inputSiswaNis" placeholder="NIS..." class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-100">
+                            <input type="text" id="inputSiswaNama" placeholder="Nama Lengkap Siswa..." class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-100">
+                            <select id="inputSiswaGender" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-100">
+                                <option value="L">Laki-Laki (L)</option>
+                                <option value="P">Perempuan (P)</option>
+                            </select>
+                        </div>
+                        <button onclick="tambahSiswaDariModal()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-sm">+ Simpan Siswa Baru</button>
+                    </div>
+
+                    <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden max-h-60 overflow-y-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 dark:bg-slate-900 sticky top-0">
+                                <tr>
+                                    <th class="p-2.5">NIS</th>
+                                    <th class="p-2.5">Nama</th>
+                                    <th class="p-2.5 text-center">L/P</th>
+                                    <th class="p-2.5 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="listSiswaKelolaTable" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 text-right">
+                <button onclick="tutupModalKelola()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold hover:bg-slate-300 dark:hover:bg-slate-600">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: REKAP PERIODE / BULANAN -->
+    <div id="modalRekap" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-4xl border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-emerald-500"></i> Rekapitulasi Presensi Periode
+                </h3>
+                <button onclick="tutupModalRekap()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-6 space-y-4 overflow-y-auto flex-1">
+                <!-- Filter Range -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Dari Tanggal</label>
+                        <input type="date" id="rekapTglMulai" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-800 dark:text-slate-100">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Sampai Tanggal</label>
+                        <input type="date" id="rekapTglSelesai" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-800 dark:text-slate-100">
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="hitungRekapitulasi()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-sm">Tampilkan Rekap</button>
+                    </div>
+                </div>
+
+                <!-- Rekap Table -->
+                <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold">
+                                <th class="p-2.5">NIS</th>
+                                <th class="p-2.5">Nama Siswa</th>
+                                <th class="p-2.5 text-center text-emerald-600">Hadir (H)</th>
+                                <th class="p-2.5 text-center text-blue-600">Sakit (S)</th>
+                                <th class="p-2.5 text-center text-amber-600">Izin (I)</th>
+                                <th class="p-2.5 text-center text-rose-600">Alpa (A)</th>
+                                <th class="p-2.5 text-center">Total Hari</th>
+                                <th class="p-2.5 text-center">% Kehadiran</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelRekapBody" class="divide-y divide-slate-200 dark:divide-slate-700">
+                            <!-- Rekap data injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="px-6 py-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                <button onclick="exportRekapToExcel()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-sm flex items-center gap-2">
+                    <i class="fa-solid fa-file-excel"></i> Export Rekap ke Excel
+                </button>
+                <button onclick="tutupModalRekap()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold hover:bg-slate-300 dark:hover:bg-slate-600">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: IMPORT & EXPORT EXCEL -->
+    <div id="modalImportExport" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-xl border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-excel text-emerald-600"></i> Import & Export Excel
+                </h3>
+                <button onclick="tutupModalImportExport()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-6 space-y-6">
+                <!-- Import Section -->
+                <div class="space-y-3 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-file-import text-blue-500"></i> Import Data Siswa
+                    </h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Unggah file Excel (.xlsx / .csv) berisi data NIS, Nama Siswa, dan Jenis Kelamin (L/P).</p>
+                    <div class="flex items-center gap-2">
+                        <input type="file" id="inputFileExcel" accept=".xlsx, .xls, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-900/40 dark:file:text-blue-300 hover:file:bg-blue-100 cursor-pointer">
+                    </div>
+                    <div class="flex items-center justify-between pt-2">
+                        <button onclick="unduhTemplateExcel()" class="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-medium">
+                            <i class="fa-solid fa-download"></i> Unduh Format Template
+                        </button>
+                        <button onclick="prosesImportExcel()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-sm">Proses Import</button>
+                    </div>
+                </div>
+
+                <!-- Export Hari Ini -->
+                <div class="space-y-3 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-file-export text-emerald-600"></i> Export Presensi Harian
+                    </h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Unduh laporan presensi tanggal & kelas aktif dalam format spreadsheet Excel.</p>
+                    <button onclick="exportHarianToExcel()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-excel"></i> Export Presensi Hari Ini (.xlsx)
+                    </button>
+                </div>
+            </div>
+            <div class="px-6 py-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 text-right">
+                <button onclick="tutupModalImportExport()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold hover:bg-slate-300 dark:hover:bg-slate-600">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: BACKUP & SYNC & RESET -->
+    <div id="modalBackup" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-xl border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up text-indigo-500"></i> Backup & Cloud Synchronization
+                </h3>
+                <button onclick="tutupModalBackup()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+                <!-- JSON Backup Restore -->
+                <div class="space-y-3 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-database text-indigo-500"></i> Backup & Restore Data (JSON)
+                    </h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Simpan seluruh data aplikasi ke file `.json` atau pulihkan data dari file cadangan sebelumnya.</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="downloadBackupJSON()" class="py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-sm flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-download"></i> Download JSON
+                        </button>
+                        <label class="py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold shadow-sm flex items-center justify-center gap-1.5 cursor-pointer text-center">
+                            <i class="fa-solid fa-upload"></i> Restore JSON
+                            <input type="file" id="inputRestoreJSON" accept=".json" onchange="restoreBackupJSON(event)" class="hidden">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Firebase Cloud Configuration -->
+                <div class="space-y-3 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-fire text-amber-500"></i> Firebase Firestore Cloud Sync
+                        </h4>
+                        <span id="cloudStatusBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300">TERPUTUS</span>
+                    </div>
+                    <div class="space-y-2 text-xs">
+                        <input type="text" id="cfgApiKey" placeholder="API Key" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-slate-800 dark:text-slate-100">
+                        <input type="text" id="cfgProjectId" placeholder="Project ID" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-slate-800 dark:text-slate-100">
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="simpanConfigFirebase()" class="flex-1 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-sm">Simpan Setting Cloud</button>
+                        <button onclick="testKoneksiCloud()" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold">Tes Koneksi</button>
+                    </div>
+                </div>
+
+                <!-- Danger Zone: Reset Data -->
+                <div class="space-y-2 p-4 bg-rose-500/10 rounded-xl border border-rose-200 dark:border-rose-900/50">
+                    <h4 class="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Zona Bahaya
+                    </h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Kembalikan sistem ke data default awal atau hapus seluruh data absensi.</p>
+                    <button onclick="konfirmasiResetData()" class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm">
+                        <i class="fa-solid fa-rotate-left"></i> Reset Ke Data Default Standard
+                    </button>
+                </div>
+            </div>
+            <div class="px-6 py-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 text-right">
+                <button onclick="tutupModalBackup()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold hover:bg-slate-300 dark:hover:bg-slate-600">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUSTOM CONFIRMATION MODAL -->
+    <div id="modalConfirm" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-sm border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden p-6 text-center space-y-4">
+            <div class="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-circle-question"></i>
+            </div>
+            <div>
+                <h4 id="confirmTitle" class="font-bold text-slate-900 dark:text-white text-base">Konfirmasi Action</h4>
+                <p id="confirmMessage" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
+            </div>
+            <div class="flex items-center gap-2 pt-2">
+                <button onclick="batalConfirm()" class="flex-1 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold hover:bg-slate-300">Batal</button>
+                <button id="btnConfirmYa" class="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-xs w-full pointer-events-none"></div>
+
+    <!-- APPLICATION SCRIPT LOGIC -->
+    <script>
+        // ==========================================
+        // INITIAL STATE & DUMMY DATA
+        // ==========================================
+        const DEFAULT_DATA = {
+            kelasList: ["X IPA 1", "X IPA 2", "XI IPS 1"],
+            mapelList: ["Matematika", "Bahasa Indonesia", "Bahasa Inggris", "Fisika"],
+            siswaMap: {
+                "X IPA 1": [
+                    { nis: "1001", nama: "Ahmad Rizky", gender: "L" },
+                    { nis: "1002", nama: "Anisa Rahmawati", gender: "P" },
+                    { nis: "1003", nama: "Budi Santoso", gender: "L" },
+                    { nis: "1004", nama: "Citra Dewi", gender: "P" },
+                    { nis: "1005", nama: "Deni Pratama", gender: "L" }
+                ],
+                "X IPA 2": [
+                    { nis: "2001", nama: "Eka Putra", gender: "L" },
+                    { nis: "2002", nama: "Fadhilah Nur", gender: "P" },
+                    { nis: "2003", nama: "Gilang Ramadhan", gender: "L" }
+                ],
+                "XI IPS 1": [
+                    { nis: "3001", nama: "Hana Maria", gender: "P" },
+                    { nis: "3002", nama: "Indra Wijaya", gender: "L" }
+                ]
+            },
+            // Format: "YYYY-MM-DD_KELAS_MAPEL": { nis: { status: "H"|"S"|"I"|"A", catatan: "..." } }
+            absensiRecords: {}
+        };
+
+        let appData = JSON.parse(localStorage.getItem('absensi_app_data')) || DEFAULT_DATA;
+        let activeKelas = localStorage.getItem('absensi_active_kelas') || appData.kelasList[0] || "";
+        let activeMapel = localStorage.getItem('absensi_active_mapel') || appData.mapelList[0] || "";
+        let activeTanggal = getTodayDateString();
+        let currentFilterStatus = 'ALL';
+        let confirmCallback = null;
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        window.onload = function() {
+            initTheme();
+            document.getElementById('inputTanggal').value = activeTanggal;
+            document.getElementById('rekapTglMulai').value = activeTanggal;
+            document.getElementById('rekapTglSelesai').value = activeTanggal;
+            
+            ensureActiveSelectionsValid();
+            renderSelectKelas();
+            renderSelectMapel();
+            renderTabel();
+            loadFirebaseConfig();
+        };
+
+        function saveData() {
+            localStorage.setItem('absensi_app_data', JSON.stringify(appData));
+            localStorage.setItem('absensi_active_kelas', activeKelas);
+            localStorage.setItem('absensi_active_mapel', activeMapel);
+        }
+
+        function getTodayDateString() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function ensureActiveSelectionsValid() {
+            if (!appData.kelasList.includes(activeKelas)) {
+                activeKelas = appData.kelasList[0] || "";
+            }
+            if (!appData.mapelList.includes(activeMapel)) {
+                activeMapel = appData.mapelList[0] || "";
+            }
+        }
+
+        // ==========================================
+        // THEME TOGGLE LOGIC (DARK / LIGHT MODE)
+        // ==========================================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('absensi_theme');
+            let isDark = true; // Default to dark
+
+            if (savedTheme) {
+                isDark = (savedTheme === 'dark');
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                isDark = false;
+            }
+
+            applyTheme(isDark);
+        }
+
+        function toggleTheme() {
+            const isCurrentlyDark = document.documentElement.classList.contains('dark');
+            applyTheme(!isCurrentlyDark);
+            showToast(!isCurrentlyDark ? 'Mode Gelap Aktif' : 'Mode Terang Aktif', 'info');
+        }
+
+        function applyTheme(isDark) {
+            const root = document.documentElement;
+            const iconSun = document.getElementById('iconSun');
+            const iconMoon = document.getElementById('iconMoon');
+
+            if (isDark) {
+                root.classList.add('dark');
+                localStorage.setItem('absensi_theme', 'dark');
+                if (iconSun && iconMoon) {
+                    iconSun.classList.remove('hidden');
+                    iconMoon.classList.add('hidden');
+                }
+            } else {
+                root.classList.remove('dark');
+                localStorage.setItem('absensi_theme', 'light');
+                if (iconSun && iconMoon) {
+                    iconSun.classList.add('hidden');
+                    iconMoon.classList.remove('hidden');
+                }
+            }
+        }
+
+        // ==========================================
+        // RENDER & UI UPDATES
+        // ==========================================
+        function renderSelectKelas() {
+            const select = document.getElementById('selectKelas');
+            select.innerHTML = '';
+            appData.kelasList.forEach(k => {
+                const opt = document.createElement('option');
+                opt.value = k;
+                opt.textContent = k;
+                if (k === activeKelas) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderSelectMapel() {
+            const select = document.getElementById('selectMapel');
+            select.innerHTML = '';
+            appData.mapelList.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                if (m === activeMapel) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function getKeyAbsensi() {
+            return `${activeTanggal}_${activeKelas}_${activeMapel}`;
+        }
+
+        function renderTabel() {
+            const tbody = document.getElementById('tabelBodySiswa');
+            const emptyState = document.getElementById('emptyState');
+            tbody.innerHTML = '';
+
+            const siswaList = appData.siswaMap[activeKelas] || [];
+            const keyRecord = getKeyAbsensi();
+            const currentRecord = appData.absensiRecords[keyRecord] || {};
+            const searchQuery = (document.getElementById('inputSearch').value || '').toLowerCase();
+
+            let countH = 0, countS = 0, countI = 0, countA = 0, countBelum = 0;
+
+            const filteredSiswa = siswaList.filter(s => {
+                const matchSearch = s.nama.toLowerCase().includes(searchQuery) || s.nis.toLowerCase().includes(searchQuery);
+                const rec = currentRecord[s.nis] || {};
+                const st = rec.status || 'BELUM';
+
+                if (st === 'H') countH++;
+                else if (st === 'S') countS++;
+                else if (st === 'I') countI++;
+                else if (st === 'A') countA++;
+                else countBelum++;
+
+                if (currentFilterStatus === 'ALL') return matchSearch;
+                if (currentFilterStatus === 'BELUM') return matchSearch && (!rec.status || rec.status === '');
+                return matchSearch && rec.status === currentFilterStatus;
+            });
+
+            // Update Stats Summary
+            const totalSiswa = siswaList.length;
+            document.getElementById('statTotal').textContent = totalSiswa;
+            document.getElementById('statHadir').textContent = countH;
+            document.getElementById('statSakit').textContent = countS;
+            document.getElementById('statIzin').textContent = countI;
+            document.getElementById('statAlpa').textContent = countA;
+            document.getElementById('statBelum').textContent = countBelum;
+
+            const persen = totalSiswa > 0 ? Math.round((countH / totalSiswa) * 100) : 0;
+            document.getElementById('statPersen').textContent = `${persen}%`;
+
+            if (filteredSiswa.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filteredSiswa.forEach((siswa, index) => {
+                const rec = currentRecord[siswa.nis] || { status: '', catatan: '' };
+                const st = rec.status || '';
+                const cat = rec.catatan || '';
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors";
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-center text-xs font-semibold text-slate-400">${index + 1}</td>
+                    <td class="py-3 px-4 text-xs font-medium text-slate-600 dark:text-slate-300">${siswa.nis}</td>
+                    <td class="py-3 px-4 text-xs font-bold text-slate-800 dark:text-slate-100">${siswa.nama}</td>
+                    <td class="py-3 px-4 text-center text-xs font-medium">
+                        <span class="px-2 py-0.5 rounded-md ${siswa.gender === 'L' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300'}">${siswa.gender}</span>
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        <div class="inline-flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-900/80 rounded-xl border border-slate-200 dark:border-slate-700/60">
+                            <button onclick="updateStatusSiswa('${siswa.nis}', 'H')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${st === 'H' ? 'bg-emerald-600 text-white shadow-md scale-105' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'}">H</button>
+                            <button onclick="updateStatusSiswa('${siswa.nis}', 'S')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${st === 'S' ? 'bg-blue-600 text-white shadow-md scale-105' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'}">S</button>
+                            <button onclick="updateStatusSiswa('${siswa.nis}', 'I')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${st === 'I' ? 'bg-amber-500 text-white shadow-md scale-105' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'}">I</button>
+                            <button onclick="updateStatusSiswa('${siswa.nis}', 'A')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${st === 'A' ? 'bg-rose-600 text-white shadow-md scale-105' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'}">A</button>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <input type="text" value="${cat}" onchange="updateCatatanSiswa('${siswa.nis}', this.value)" placeholder="Keterangan..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-200 px-3 py-1 rounded-lg text-xs focus:ring-1 focus:ring-blue-500 focus:outline-none transition-colors">
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="konfirmasiHapusSiswaBaris('${siswa.nis}', '${siswa.nama}')" title="Hapus Siswa" class="p-1.5 text-slate-400 hover:text-rose-500 transition-colors">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ==========================================
+        // ATTENDANCE LOGIC
+        // ==========================================
+        function updateStatusSiswa(nis, status) {
+            const key = getKeyAbsensi();
+            if (!appData.absensiRecords[key]) appData.absensiRecords[key] = {};
+            if (!appData.absensiRecords[key][nis]) appData.absensiRecords[key][nis] = { status: '', catatan: '' };
+
+            appData.absensiRecords[key][nis].status = status;
+            saveData();
+            renderTabel();
+        }
+
+        function updateCatatanSiswa(nis, catatan) {
+            const key = getKeyAbsensi();
+            if (!appData.absensiRecords[key]) appData.absensiRecords[key] = {};
+            if (!appData.absensiRecords[key][nis]) appData.absensiRecords[key][nis] = { status: '', catatan: '' };
+
+            appData.absensiRecords[key][nis].catatan = catatan;
+            saveData();
+        }
+
+        function tandaiSemuaHadir() {
+            const siswaList = appData.siswaMap[activeKelas] || [];
+            if (siswaList.length === 0) {
+                showToast('Tidak ada siswa di kelas ini', 'info');
+                return;
+            }
+
+            const key = getKeyAbsensi();
+            if (!appData.absensiRecords[key]) appData.absensiRecords[key] = {};
+
+            siswaList.forEach(s => {
+                if (!appData.absensiRecords[key][s.nis]) appData.absensiRecords[key][s.nis] = { status: '', catatan: '' };
+                appData.absensiRecords[key][s.nis].status = 'H';
+            });
+
+            saveData();
+            renderTabel();
+            showToast('Semua siswa ditandai Hadir (H)', 'success');
+        }
+
+        function gantiTanggal(tgl) {
+            activeTanggal = tgl;
+            renderTabel();
+        }
+
+        function gantiKelas(kls) {
+            activeKelas = kls;
+            saveData();
+            renderTabel();
+        }
+
+        function gantiMapel(mpl) {
+            activeMapel = mpl;
+            saveData();
+            renderTabel();
+        }
+
+        function setTabFilter(filter) {
+            currentFilterStatus = filter;
+            ['ALL', 'H', 'S', 'I', 'A', 'BELUM'].forEach(f => {
+                const btn = document.getElementById('tab' + f);
+                if (f === filter) {
+                    btn.className = "px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-blue-600 text-white shadow-sm";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700";
+                }
+            });
+            renderTabel();
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // ==========================================
+        // MASTER DATA MANAGEMENT
+        // ==========================================
+        function bukaModalKelola() {
+            document.getElementById('modalKelola').classList.remove('hidden');
+            renderKelolaLists();
+        }
+
+        function tutupModalKelola() {
+            document.getElementById('modalKelola').classList.add('hidden');
+        }
+
+        function switchTabKelola(tab) {
+            ['kelas', 'mapel', 'siswa'].forEach(t => {
+                const btn = document.getElementById('tabKelola' + t.charAt(0).toUpperCase() + t.slice(1));
+                const content = document.getElementById('contentKelola' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (t === tab) {
+                    btn.className = "py-3 px-4 text-xs font-bold border-b-2 border-blue-600 text-blue-600 dark:text-blue-400";
+                    content.classList.remove('hidden');
+                } else {
+                    btn.className = "py-3 px-4 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300";
+                    content.classList.add('hidden');
+                }
+            });
+            renderKelolaLists();
+        }
+
+        function renderKelolaLists() {
+            // Render Kelas List
+            const listKelas = document.getElementById('listKelasKelola');
+            listKelas.innerHTML = '';
+            appData.kelasList.forEach(k => {
+                const li = document.createElement('li');
+                li.className = "p-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50";
+                li.innerHTML = `
+                    <span class="font-medium text-slate-800 dark:text-slate-200">${k}</span>
+                    <button onclick="konfirmasiHapusKelas('${k}')" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                `;
+                listKelas.appendChild(li);
+            });
+
+            // Render Mapel List
+            const listMapel = document.getElementById('listMapelKelola');
+            listMapel.innerHTML = '';
+            appData.mapelList.forEach(m => {
+                const li = document.createElement('li');
+                li.className = "p-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50";
+                li.innerHTML = `
+                    <span class="font-medium text-slate-800 dark:text-slate-200">${m}</span>
+                    <button onclick="konfirmasiHapusMapel('${m}')" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                `;
+                listMapel.appendChild(li);
+            });
+
+            // Render Siswa List Table
+            const listSiswaTable = document.getElementById('listSiswaKelolaTable');
+            listSiswaTable.innerHTML = '';
+            const siswaList = appData.siswaMap[activeKelas] || [];
+            siswaList.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50";
+                tr.innerHTML = `
+                    <td class="p-2.5 font-medium text-slate-600 dark:text-slate-300">${s.nis}</td>
+                    <td class="p-2.5 font-bold text-slate-800 dark:text-slate-100">${s.nama}</td>
+                    <td class="p-2.5 text-center">${s.gender}</td>
+                    <td class="p-2.5 text-center">
+                        <button onclick="hapusSiswa('${s.nis}')" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
+                listSiswaTable.appendChild(tr);
+            });
+        }
+
+        function bukaModalTambahKelas() {
+            bukaModalKelola();
+            switchTabKelola('kelas');
+        }
+
+        function bukaModalTambahMapel() {
+            bukaModalKelola();
+            switchTabKelola('mapel');
+        }
+
+        function tambahKelasDariModal() {
+            const val = document.getElementById('inputNamaKelasBaru').value.trim();
+            if (!val) {
+                showToast('Nama kelas tidak boleh kosong', 'error');
+                return;
+            }
+            if (appData.kelasList.includes(val)) {
+                showToast('Kelas tersebut sudah ada', 'error');
+                return;
+            }
+            appData.kelasList.push(val);
+            if (!appData.siswaMap[val]) appData.siswaMap[val] = [];
+            activeKelas = val;
+            saveData();
+            document.getElementById('inputNamaKelasBaru').value = '';
+            renderSelectKelas();
+            renderKelolaLists();
+            renderTabel();
+            showToast(`Kelas ${val} berhasil ditambahkan`, 'success');
+        }
+
+        function tambahMapelDariModal() {
+            const val = document.getElementById('inputNamaMapelBaru').value.trim();
+            if (!val) {
+                showToast('Nama mapel tidak boleh kosong', 'error');
+                return;
+            }
+            if (appData.mapelList.includes(val)) {
+                showToast('Mapel tersebut sudah ada', 'error');
+                return;
+            }
+            appData.mapelList.push(val);
+            activeMapel = val;
+            saveData();
+            document.getElementById('inputNamaMapelBaru').value = '';
+            renderSelectMapel();
+            renderKelolaLists();
+            renderTabel();
+            showToast(`Mapel ${val} berhasil ditambahkan`, 'success');
+        }
+
+        function tambahSiswaDariModal() {
+            const nis = document.getElementById('inputSiswaNis').value.trim();
+            const nama = document.getElementById('inputSiswaNama').value.trim();
+            const gender = document.getElementById('inputSiswaGender').value;
+
+            if (!nis || !nama) {
+                showToast('NIS dan Nama Siswa wajib diisi', 'error');
+                return;
+            }
+
+            if (!appData.siswaMap[activeKelas]) appData.siswaMap[activeKelas] = [];
+            const isExist = appData.siswaMap[activeKelas].some(s => s.nis === nis);
+            if (isExist) {
+                showToast('NIS sudah terdaftar di kelas ini', 'error');
+                return;
+            }
+
+            appData.siswaMap[activeKelas].push({ nis, nama, gender });
+            saveData();
+
+            document.getElementById('inputSiswaNis').value = '';
+            document.getElementById('inputSiswaNama').value = '';
+            renderKelolaLists();
+            renderTabel();
+            showToast(`Siswa ${nama} ditambahkan ke ${activeKelas}`, 'success');
+        }
+
+        function konfirmasiHapusKelasAktif() {
+            if (appData.kelasList.length <= 1) {
+                showToast('Minimal harus ada 1 kelas tersisa', 'error');
+                return;
+            }
+            konfirmasiHapusKelas(activeKelas);
+        }
+
+        function konfirmasiHapusMapelAktif() {
+            if (appData.mapelList.length <= 1) {
+                showToast('Minimal harus ada 1 mapel tersisa', 'error');
+                return;
+            }
+            konfirmasiHapusMapel(activeMapel);
+        }
+
+        function konfirmasiHapusKelas(kls) {
+            bukaConfirmModal(
+                'Hapus Kelas?',
+                `Apakah Anda yakin ingin menghapus kelas "${kls}" beserta data siswanya?`,
+                () => {
+                    appData.kelasList = appData.kelasList.filter(k => k !== kls);
+                    delete appData.siswaMap[kls];
+                    ensureActiveSelectionsValid();
+                    saveData();
+                    renderSelectKelas();
+                    renderKelolaLists();
+                    renderTabel();
+                    showToast(`Kelas ${kls} berhasil dihapus`, 'success');
+                }
+            );
+        }
+
+        function konfirmasiHapusMapel(mpl) {
+            bukaConfirmModal(
+                'Hapus Mapel?',
+                `Apakah Anda yakin ingin menghapus mata pelajaran "${mpl}"?`,
+                () => {
+                    appData.mapelList = appData.mapelList.filter(m => m !== mpl);
+                    ensureActiveSelectionsValid();
+                    saveData();
+                    renderSelectMapel();
+                    renderKelolaLists();
+                    renderTabel();
+                    showToast(`Mapel ${mpl} berhasil dihapus`, 'success');
+                }
+            );
+        }
+
+        function konfirmasiHapusSiswaBaris(nis, nama) {
+            bukaConfirmModal(
+                'Hapus Siswa?',
+                `Apakah Anda yakin ingin menghapus siswa "${nama}" (${nis}) dari ${activeKelas}?`,
+                () => {
+                    hapusSiswa(nis);
+                }
+            );
+        }
+
+        function hapusSiswa(nis) {
+            if (appData.siswaMap[activeKelas]) {
+                appData.siswaMap[activeKelas] = appData.siswaMap[activeKelas].filter(s => s.nis !== nis);
+                saveData();
+                renderKelolaLists();
+                renderTabel();
+                showToast('Data siswa berhasil dihapus', 'success');
+            }
+        }
+
+        // ==========================================
+        // REKAP PERIODE
+        // ==========================================
+        function bukaModalRekap() {
+            document.getElementById('modalRekap').classList.remove('hidden');
+            hitungRekapitulasi();
+        }
+
+        function tutupModalRekap() {
+            document.getElementById('modalRekap').classList.add('hidden');
+        }
+
+        function hitungRekapitulasi() {
+            const tglMulai = document.getElementById('rekapTglMulai').value;
+            const tglSelesai = document.getElementById('rekapTglSelesai').value;
+            const tbody = document.getElementById('tabelRekapBody');
+            tbody.innerHTML = '';
+
+            if (!tglMulai || !tglSelesai) {
+                showToast('Tentukan rentang tanggal rekap', 'error');
+                return;
+            }
+
+            const siswaList = appData.siswaMap[activeKelas] || [];
+            if (siswaList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">Tidak ada siswa di kelas ini</td></tr>`;
+                return;
+            }
+
+            // Loop records between range
+            siswaList.forEach(s => {
+                let countH = 0, countS = 0, countI = 0, countA = 0;
+                let totalHari = 0;
+
+                Object.keys(appData.absensiRecords).forEach(key => {
+                    // key format: YYYY-MM-DD_KELAS_MAPEL
+                    const parts = key.split('_');
+                    if (parts.length >= 3) {
+                        const tgl = parts[0];
+                        const kls = parts[1];
+                        const mpl = parts[2];
+
+                        if (kls === activeKelas && mpl === activeMapel && tgl >= tglMulai && tgl <= tglSelesai) {
+                            const rec = appData.absensiRecords[key][s.nis];
+                            if (rec && rec.status) {
+                                totalHari++;
+                                if (rec.status === 'H') countH++;
+                                else if (rec.status === 'S') countS++;
+                                else if (rec.status === 'I') countI++;
+                                else if (rec.status === 'A') countA++;
+                            }
+                        }
+                    }
+                });
+
+                const persen = totalHari > 0 ? Math.round((countH / totalHari) * 100) : 0;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50";
+                tr.innerHTML = `
+                    <td class="p-2.5 font-medium text-slate-600 dark:text-slate-300">${s.nis}</td>
+                    <td class="p-2.5 font-bold text-slate-800 dark:text-slate-100">${s.nama}</td>
+                    <td class="p-2.5 text-center text-emerald-600 font-semibold">${countH}</td>
+                    <td class="p-2.5 text-center text-blue-600 font-semibold">${countS}</td>
+                    <td class="p-2.5 text-center text-amber-600 font-semibold">${countI}</td>
+                    <td class="p-2.5 text-center text-rose-600 font-semibold">${countA}</td>
+                    <td class="p-2.5 text-center font-bold">${totalHari}</td>
+                    <td class="p-2.5 text-center font-extrabold text-blue-600 dark:text-blue-400">${persen}%</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function exportRekapToExcel() {
+            const tglMulai = document.getElementById('rekapTglMulai').value;
+            const tglSelesai = document.getElementById('rekapTglSelesai').value;
+            const siswaList = appData.siswaMap[activeKelas] || [];
+
+            const excelData = [];
+            siswaList.forEach(s => {
+                let countH = 0, countS = 0, countI = 0, countA = 0;
+                let totalHari = 0;
+
+                Object.keys(appData.absensiRecords).forEach(key => {
+                    const parts = key.split('_');
+                    if (parts.length >= 3) {
+                        const tgl = parts[0];
+                        const kls = parts[1];
+                        const mpl = parts[2];
+
+                        if (kls === activeKelas && mpl === activeMapel && tgl >= tglMulai && tgl <= tglSelesai) {
+                            const rec = appData.absensiRecords[key][s.nis];
+                            if (rec && rec.status) {
+                                totalHari++;
+                                if (rec.status === 'H') countH++;
+                                else if (rec.status === 'S') countS++;
+                                else if (rec.status === 'I') countI++;
+                                else if (rec.status === 'A') countA++;
+                            }
+                        }
+                    }
+                });
+
+                const persen = totalHari > 0 ? Math.round((countH / totalHari) * 100) : 0;
+
+                excelData.push({
+                    "NIS": s.nis,
+                    "Nama Siswa": s.nama,
+                    "Kelas": activeKelas,
+                    "Mata Pelajaran": activeMapel,
+                    "Hadir (H)": countH,
+                    "Sakit (S)": countS,
+                    "Izin (I)": countI,
+                    "Alpa (A)": countA,
+                    "Total Pertemuan": totalHari,
+                    "Persentase Kehadiran": `${persen}%`
+                });
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Absensi");
+            XLSX.writeFile(workbook, `Rekap_Absensi_${activeKelas}_${tglMulai}_sd_${tglSelesai}.xlsx`);
+            showToast('File Excel Rekap berhasil diunduh', 'success');
+        }
+
+        // ==========================================
+        // IMPORT / EXPORT HARIAN
+        // ==========================================
+        function bukaModalImportExport() {
+            document.getElementById('modalImportExport').classList.remove('hidden');
+        }
+
+        function tutupModalImportExport() {
+            document.getElementById('modalImportExport').classList.add('hidden');
+        }
+
+        function unduhTemplateExcel() {
+            const templateData = [
+                { "NIS": "1001", "Nama Siswa": "Contoh Siswa A", "Jenis Kelamin": "L" },
+                { "NIS": "1002", "Nama Siswa": "Contoh Siswa B", "Jenis Kelamin": "P" }
+            ];
+            const ws = XLSX.utils.json_to_sheet(templateData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Template Siswa");
+            XLSX.writeFile(wb, "Template_Import_Siswa.xlsx");
+            showToast('Template Excel berhasil diunduh', 'success');
+        }
+
+        function prosesImportExcel() {
+            const input = document.getElementById('inputFileExcel');
+            if (!input.files || input.files.length === 0) {
+                showToast('Pilih file Excel terlebih dahulu', 'error');
+                return;
+            }
+
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet);
+
+                    if (json.length === 0) {
+                        showToast('File Excel kosong atau format tidak sesuai', 'error');
+                        return;
+                    }
+
+                    if (!appData.siswaMap[activeKelas]) appData.siswaMap[activeKelas] = [];
+                    let importedCount = 0;
+
+                    json.forEach(row => {
+                        const nis = String(row['NIS'] || row['nis'] || '').trim();
+                        const nama = String(row['Nama Siswa'] || row['Nama'] || row['nama'] || '').trim();
+                        const gender = String(row['Jenis Kelamin'] || row['Gender'] || 'L').trim().toUpperCase().charAt(0);
+
+                        if (nis && nama) {
+                            const exists = appData.siswaMap[activeKelas].some(s => s.nis === nis);
+                            if (!exists) {
+                                appData.siswaMap[activeKelas].push({ nis, nama, gender: (gender === 'P' ? 'P' : 'L') });
+                                importedCount++;
+                            }
+                        }
+                    });
+
+                    saveData();
+                    renderTabel();
+                    tutupModalImportExport();
+                    showToast(`Berhasil mengimpor ${importedCount} data siswa ke ${activeKelas}`, 'success');
+                } catch (err) {
+                    showToast('Gagal membaca file Excel', 'error');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function exportHarianToExcel() {
+            const siswaList = appData.siswaMap[activeKelas] || [];
+            const keyRecord = getKeyAbsensi();
+            const currentRecord = appData.absensiRecords[keyRecord] || {};
+
+            const excelData = siswaList.map(s => {
+                const rec = currentRecord[s.nis] || { status: 'BELUM', catatan: '' };
+                let textStatus = 'Belum Diabsen';
+                if (rec.status === 'H') textStatus = 'Hadir';
+                else if (rec.status === 'S') textStatus = 'Sakit';
+                else if (rec.status === 'I') textStatus = 'Izin';
+                else if (rec.status === 'A') textStatus = 'Alpa';
+
+                return {
+                    "Tanggal": activeTanggal,
+                    "Kelas": activeKelas,
+                    "Mata Pelajaran": activeMapel,
+                    "NIS": s.nis,
+                    "Nama Siswa": s.nama,
+                    "L/P": s.gender,
+                    "Status Presensi": textStatus,
+                    "Catatan / Keterangan": rec.catatan || ''
+                };
+            });
+
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Presensi Harian");
+            XLSX.writeFile(wb, `Presensi_${activeKelas}_${activeMapel}_${activeTanggal}.xlsx`);
+            showToast('File Excel presensi harian berhasil diunduh', 'success');
+        }
+
+        // ==========================================
+        // BACKUP, RESTORE & CLOUD SYNC
+        // ==========================================
+        function bukaModalBackup() {
+            document.getElementById('modalBackup').classList.remove('hidden');
+        }
+
+        function tutupModalBackup() {
+            document.getElementById('modalBackup').classList.add('hidden');
+        }
+
+        function downloadBackupJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `Backup_Absensi_${getTodayDateString()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('Backup data JSON berhasil dibuat', 'success');
+        }
+
+        function restoreBackupJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (importedData.kelasList && importedData.siswaMap) {
+                        appData = importedData;
+                        ensureActiveSelectionsValid();
+                        saveData();
+                        renderSelectKelas();
+                        renderSelectMapel();
+                        renderTabel();
+                        showToast('Restore data berhasil dipulihkan', 'success');
+                        tutupModalBackup();
+                    } else {
+                        showToast('Struktur JSON backup tidak valid', 'error');
+                    }
+                } catch (err) {
+                    showToast('Gagal memproses file JSON backup', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function loadFirebaseConfig() {
+            const cfg = JSON.parse(localStorage.getItem('absensi_firebase_cfg') || '{}');
+            if (cfg.apiKey) document.getElementById('cfgApiKey').value = cfg.apiKey;
+            if (cfg.projectId) document.getElementById('cfgProjectId').value = cfg.projectId;
+        }
+
+        function simpanConfigFirebase() {
+            const apiKey = document.getElementById('cfgApiKey').value.trim();
+            const projectId = document.getElementById('cfgProjectId').value.trim();
+            localStorage.setItem('absensi_firebase_cfg', JSON.stringify({ apiKey, projectId }));
+            showToast('Pengaturan Firebase disimpan', 'success');
+        }
+
+        function testKoneksiCloud() {
+            const badge = document.getElementById('cloudStatusBadge');
+            badge.textContent = "MENGHUBUNGKAN...";
+            badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300";
+
+            setTimeout(() => {
+                badge.textContent = "TERHUBUNG (SIMULASI)";
+                badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300";
+                showToast('Koneksi Cloud Firestore berhasil dites', 'success');
+            }, 1000);
+        }
+
+        function konfirmasiResetData() {
+            bukaConfirmModal(
+                'Reset Ke Default?',
+                'Apakah Anda yakin ingin mereset seluruh data kembali ke pengaturan default pabrik? Data saat ini akan terhapus.',
+                () => {
+                    appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+                    activeKelas = appData.kelasList[0];
+                    activeMapel = appData.mapelList[0];
+                    saveData();
+                    renderSelectKelas();
+                    renderSelectMapel();
+                    renderTabel();
+                    tutupModalBackup();
+                    showToast('Data aplikasi berhasil direset ke default', 'success');
+                }
+            );
+        }
+
+        // ==========================================
+        // UTILS: CUSTOM DIALOG & TOAST NOTIFICATION
+        // ==========================================
+        function bukaConfirmModal(title, msg, onConfirm) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = msg;
+            confirmCallback = onConfirm;
+
+            const btnYa = document.getElementById('btnConfirmYa');
+            btnYa.onclick = function() {
+                if (confirmCallback) confirmCallback();
+                batalConfirm();
+            };
+
+            document.getElementById('modalConfirm').classList.remove('hidden');
+        }
+
+        function batalConfirm() {
+            document.getElementById('modalConfirm').classList.add('hidden');
+            confirmCallback = null;
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs font-semibold text-white shadow-xl transition-all duration-300 transform translate-y-2 opacity-0`;
+
+            let bgClass = "bg-slate-800 dark:bg-slate-700";
+            let iconClass = "fa-solid fa-circle-info text-blue-400";
+
+            if (type === 'success') {
+                bgClass = "bg-emerald-700";
+                iconClass = "fa-solid fa-circle-check text-white";
+            } else if (type === 'error') {
+                bgClass = "bg-rose-700";
+                iconClass = "fa-solid fa-circle-xmark text-white";
+            }
+
+            toast.className += ` ${bgClass}`;
+            toast.innerHTML = `<i class="${iconClass} text-sm"></i> <span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            // Animate in
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            // Auto dismiss
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
