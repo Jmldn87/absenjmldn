@@ -24,7 +24,6 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
-    /* Sembunyikan scrollbar pada horizontal pill bar namun tetap bisa di-scroll */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -43,9 +42,9 @@
 </head>
 <body class="bg-slate-100 text-slate-800 dark:bg-[#0b1120] dark:text-slate-100 transition-colors duration-200 pb-24 sm:pb-10">
 
-  <!-- TOP NAVBAR (COMPACT MOBILE-FIRST) -->
+  <!-- TOP NAVBAR (FULL-WIDTH FLUID ON DESKTOP, COMPACT ON MOBILE) -->
   <header class="sticky top-0 z-30 bg-white/90 dark:bg-[#111827]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
-    <div class="max-w-4xl mx-auto px-3.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2">
+    <div class="w-full max-w-[1600px] mx-auto px-3.5 sm:px-6 lg:px-10 h-14 sm:h-16 flex items-center justify-between gap-2">
       <!-- Brand & Cloud Status -->
       <div class="flex items-center gap-2.5 min-w-0">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0">
@@ -63,20 +62,20 @@
         </div>
       </div>
 
-      <!-- Action Buttons (Desktop & Mobile Quick Icons) -->
-      <div class="flex items-center gap-1.5 shrink-0">
-        <button onclick="openModal('modalManage')" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition">
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <button onclick="openModal('modalManage')" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition">
           <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path></svg>
           Kelola Data
         </button>
-        <button onclick="openRekapModal()" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition">
+        <button onclick="openRekapModal()" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
           Rekap & Export
         </button>
-        <button onclick="openModal('modalSettings')" title="Pengaturan & Cloud Sync" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">
+        <button onclick="openModal('modalSettings')" title="Pengaturan & Cloud Sync" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
         </button>
-        <button onclick="toggleTheme()" title="Ganti Tema" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-amber-500 transition">
+        <button onclick="toggleTheme()" title="Ganti Tema" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-amber-500 transition">
           <svg id="iconSun" class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
           <svg id="iconMoon" class="w-4 h-4 block dark:hidden text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
         </button>
@@ -84,20 +83,20 @@
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
-  <main class="max-w-4xl mx-auto px-3 sm:px-6 pt-3 sm:pt-5 space-y-3 sm:space-y-4">
+  <!-- MAIN CONTAINER (FLUID RESPONSIVE) -->
+  <main class="w-full max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-10 pt-3 sm:pt-5 space-y-3 sm:space-y-4">
 
-    <!-- COMPACT CONTROL CARD (2-COLUMN GRID ON MOBILE) -->
-    <section class="bg-white dark:bg-[#111827] rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-2.5 sm:space-y-3">
-      <div class="grid grid-cols-2 sm:grid-cols-12 gap-2.5">
+    <!-- CONTROL CARD (1 ROW ON LARGE DESKTOP, 2 ROWS ON MOBILE) -->
+    <section class="bg-white dark:bg-[#111827] rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+      <div class="grid grid-cols-2 lg:grid-cols-12 gap-2.5 lg:items-end">
         <!-- Tanggal -->
-        <div class="col-span-1 sm:col-span-4">
+        <div class="col-span-1 lg:col-span-3">
           <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Tanggal</label>
           <input type="date" id="inputDate" onchange="onFilterChange()" class="w-full h-9 sm:h-10 px-2.5 rounded-xl bg-slate-50 dark:bg-[#1a2234] border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
 
         <!-- Kelas -->
-        <div class="col-span-1 sm:col-span-4">
+        <div class="col-span-1 lg:col-span-3">
           <div class="flex items-center justify-between mb-1">
             <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Kelas</label>
             <div class="flex items-center gap-1.5">
@@ -111,7 +110,7 @@
         </div>
 
         <!-- Mata Pelajaran -->
-        <div class="col-span-2 sm:col-span-4">
+        <div class="col-span-2 lg:col-span-3">
           <div class="flex items-center justify-between mb-1">
             <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Mata Pelajaran</label>
             <div class="flex items-center gap-2">
@@ -123,17 +122,19 @@
           </div>
           <select id="selectSubject" onchange="onFilterChange()" class="w-full h-9 sm:h-10 px-2.5 rounded-xl bg-slate-50 dark:bg-[#1a2234] border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 truncate"></select>
         </div>
-      </div>
 
-      <!-- Tombol Tandai Semua Hadir -->
-      <button onclick="markAllPresent()" class="w-full h-9 sm:h-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm shadow-emerald-600/20 transition">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-        Tandai Semua Hadir
-      </button>
+        <!-- Tombol Tandai Semua Hadir -->
+        <div class="col-span-2 lg:col-span-3">
+          <button onclick="markAllPresent()" class="w-full h-9 sm:h-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm shadow-emerald-600/20 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+            Tandai Semua Hadir
+          </button>
+        </div>
+      </div>
     </section>
 
-    <!-- COMPACT HORIZONTAL SUMMARY STRIP (NO MORE 6 BIG BOXES ON MOBILE) -->
-    <section class="grid grid-cols-6 gap-1.5 sm:gap-2.5">
+    <!-- SUMMARY STRIP -->
+    <section class="grid grid-cols-6 gap-1.5 sm:gap-3">
       <div class="bg-white dark:bg-[#111827] rounded-xl p-2 sm:p-3 border border-slate-200/80 dark:border-slate-800 text-center">
         <div id="statTotal" class="text-sm sm:text-xl font-extrabold text-slate-800 dark:text-white leading-tight">0</div>
         <div class="text-[9px] sm:text-[11px] font-medium text-slate-400 mt-0.5">Total</div>
@@ -160,31 +161,31 @@
       </div>
     </section>
 
-    <!-- SEARCH & FILTER PILLS -->
-    <section class="space-y-2">
-      <div class="relative">
+    <!-- SEARCH & FILTER PILLS (SIDE BY SIDE ON DESKTOP) -->
+    <section class="flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+      <div class="relative flex-1">
         <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         <input type="text" id="searchStudent" oninput="renderStudentList()" placeholder="Cari nama atau NIS siswa..." class="w-full h-9 sm:h-10 pl-9 pr-3 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
       </div>
 
-      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5" id="filterTabs">
-        <button onclick="setFilterTab('ALL')" data-tab="ALL" class="filter-pill px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white shrink-0 transition">Semua</button>
-        <button onclick="setFilterTab('H')" data-tab="H" class="filter-pill px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shrink-0 transition">Hadir</button>
-        <button onclick="setFilterTab('S')" data-tab="S" class="filter-pill px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shrink-0 transition">Sakit</button>
-        <button onclick="setFilterTab('I')" data-tab="I" class="filter-pill px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shrink-0 transition">Izin</button>
-        <button onclick="setFilterTab('A')" data-tab="A" class="filter-pill px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shrink-0 transition">Alpa</button>
-        <button onclick="setFilterTab('NONE')" data-tab="NONE" class="filter-pill px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shrink-0 transition">Belum</button>
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 md:pb-0 shrink-0" id="filterTabs">
+        <button onclick="setFilterTab('ALL')" data-tab="ALL" class="filter-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white shrink-0 transition">Semua</button>
+        <button onclick="setFilterTab('H')" data-tab="H" class="filter-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shrink-0 transition">Hadir</button>
+        <button onclick="setFilterTab('S')" data-tab="S" class="filter-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shrink-0 transition">Sakit</button>
+        <button onclick="setFilterTab('I')" data-tab="I" class="filter-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shrink-0 transition">Izin</button>
+        <button onclick="setFilterTab('A')" data-tab="A" class="filter-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shrink-0 transition">Alpa</button>
+        <button onclick="setFilterTab('NONE')" data-tab="NONE" class="filter-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shrink-0 transition">Belum</button>
       </div>
     </section>
 
-    <!-- STUDENT ATTENDANCE LIST -->
-    <section id="studentListContainer" class="space-y-2">
+    <!-- STUDENT ATTENDANCE LIST (1 COL MOBILE, 2 COLS DESKTOP) -->
+    <section id="studentListContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
       <!-- Rendered dynamically by JS -->
     </section>
 
   </main>
 
-  <!-- MOBILE BOTTOM NAVIGATION BAR (THUMB-FRIENDLY) -->
+  <!-- MOBILE BOTTOM NAVIGATION BAR -->
   <nav class="sm:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-3 py-2 flex items-center justify-around gap-2">
     <button onclick="openModal('modalManage')" class="flex-1 py-1.5 px-2 rounded-xl flex flex-col items-center justify-center gap-0.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
       <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
@@ -214,7 +215,7 @@
     </div>
   </div>
 
-  <!-- MODAL: MANAGE DATA (KELAS, MAPEL, SISWA, IMPORT EXCEL) -->
+  <!-- MODAL: MANAGE DATA -->
   <div id="modalManage" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs sm:p-4">
     <div class="bg-white dark:bg-[#111827] border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl">
       <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
@@ -222,7 +223,6 @@
         <button onclick="closeModal('modalManage')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500">✕</button>
       </div>
 
-      <!-- Sub-tabs -->
       <div class="flex border-b border-slate-200 dark:border-slate-800 px-4 gap-4 text-xs font-semibold">
         <button onclick="switchManageTab('students')" id="mtab-students" class="py-3 border-b-2 border-blue-500 text-blue-500">Data Siswa</button>
         <button onclick="switchManageTab('import')" id="mtab-import" class="py-3 border-b-2 border-transparent text-slate-400">Import Excel</button>
@@ -230,7 +230,6 @@
       </div>
 
       <div class="p-4 overflow-y-auto space-y-4 flex-1 text-sm">
-        <!-- Tab Students -->
         <div id="mcontent-students" class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 bg-slate-50 dark:bg-[#1a2234] p-3 rounded-xl">
             <input type="text" id="newStdNis" placeholder="NIS" class="h-9 px-2.5 rounded-lg bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-700 text-xs">
@@ -241,7 +240,6 @@
           <div id="manageStudentList" class="divide-y divide-slate-200 dark:divide-slate-800 max-h-64 overflow-y-auto"></div>
         </div>
 
-        <!-- Tab Import Excel -->
         <div id="mcontent-import" class="hidden space-y-4">
           <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs space-y-2">
             <p class="font-semibold text-blue-500">Panduan Import Siswa Massal (.xlsx / .csv):</p>
@@ -253,7 +251,6 @@
           <input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv" onchange="handleExcelImport(event)" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-200 dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-200">
         </div>
 
-        <!-- Tab Classes & Subjects -->
         <div id="mcontent-classes" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">Daftar Kelas</h4>
@@ -311,7 +308,7 @@
     </div>
   </div>
 
-  <!-- MODAL: SETTINGS (FIREBASE CLOUD SYNC & BACKUP JSON) -->
+  <!-- MODAL: SETTINGS -->
   <div id="modalSettings" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs sm:p-4">
     <div class="bg-white dark:bg-[#111827] border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl">
       <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
@@ -319,7 +316,6 @@
         <button onclick="closeModal('modalSettings')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500">✕</button>
       </div>
       <div class="p-4 space-y-4 overflow-y-auto text-xs">
-        <!-- Firebase Section -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <span class="font-bold text-sm">Firebase Firestore Sync</span>
@@ -336,7 +332,6 @@
 
         <hr class="border-slate-200 dark:border-slate-800">
 
-        <!-- Backup JSON -->
         <div class="space-y-2">
           <span class="font-bold text-sm block">Backup & Restore File (JSON)</span>
           <div class="grid grid-cols-2 gap-2">
@@ -350,7 +345,6 @@
 
         <hr class="border-slate-200 dark:border-slate-800">
 
-        <!-- Reset Data -->
         <div>
           <button onclick="confirmResetAll()" class="w-full py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 font-semibold">Reset Semua Data Aplikasi</button>
         </div>
@@ -380,7 +374,6 @@
     import { initializeApp, getApps, deleteApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // --- STATE ---
     const STORAGE_KEY = 'absensi_guru_v3_data';
     const FB_CONFIG_KEY = 'absensi_guru_fb_config';
 
@@ -394,18 +387,17 @@
         { id: 's4', nis: '0096626412', name: 'CITRA DEWI LESTARI', className: 'XI-DKV' },
         { id: 's5', nis: '0096626413', name: 'DIMAS ARYA SAPUTRA', className: 'X-TKJ-1' }
       ],
-      attendance: {} // key: `${date}_${className}_${subject}` -> { studentId: { status: 'H'|'S'|'I'|'A', note: '' } }
+      attendance: {}
     };
 
     let currentFilterTab = 'ALL';
     let addItemType = 'class';
-    let expandedNotes = {}; // track open note drawers per student
+    let expandedNotes = {};
     let db = null;
     let unsubscribeSnapshot = null;
     let isRemoteUpdate = false;
     let syncTimeout = null;
 
-    // --- INIT ---
     window.addEventListener('DOMContentLoaded', () => {
       initTheme();
       loadLocalData();
@@ -414,7 +406,6 @@
       renderDropdowns();
       renderAll();
 
-      // Auto-connect Firebase if saved
       const savedFb = localStorage.getItem(FB_CONFIG_KEY);
       if (savedFb) {
         document.getElementById('firebaseConfigInput').value = savedFb;
@@ -422,7 +413,6 @@
       }
     });
 
-    // --- THEME ---
     function initTheme() {
       const saved = localStorage.getItem('absensi_theme');
       if (saved === 'light') {
@@ -437,7 +427,6 @@
       localStorage.setItem('absensi_theme', isDark ? 'dark' : 'light');
     };
 
-    // --- STORAGE & CLOUD SYNC ---
     function loadLocalData() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -476,7 +465,6 @@
       const match = cleaned.match(/\{[\s\S]*\}/);
       if (!match) throw new Error("Format objek { ... } tidak ditemukan.");
       cleaned = match[0];
-      // Convert JS object literal keys to valid JSON keys
       cleaned = cleaned.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?\s*:/g, '"$2":');
       cleaned = cleaned.replace(/'/g, '"');
       cleaned = cleaned.replace(/,\s*}/g, '}');
@@ -503,7 +491,6 @@
         db = getFirestore(app);
         localStorage.setItem(FB_CONFIG_KEY, rawConfig);
 
-        // Listen realtime
         unsubscribeSnapshot = onSnapshot(doc(db, "absensi_guru", "master_data"), (docSnap) => {
           setCloudUI('connected');
           if (docSnap.exists()) {
@@ -517,7 +504,6 @@
               isRemoteUpdate = false;
             }
           } else {
-            // Cloud empty, push initial local data
             pushToFirestore();
           }
         }, (err) => {
@@ -581,7 +567,6 @@
       }
     }
 
-    // --- DROPDOWNS & FILTERS ---
     function renderDropdowns() {
       const selClass = document.getElementById('selectClass');
       const selSubj = document.getElementById('selectSubject');
@@ -603,9 +588,9 @@
       currentFilterTab = tab;
       document.querySelectorAll('.filter-pill').forEach(btn => {
         if (btn.dataset.tab === tab) {
-          btn.className = "filter-pill px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white shrink-0 transition";
+          btn.className = "filter-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white shrink-0 transition";
         } else {
-          btn.className = "filter-pill px-3 py-1 rounded-full text-xs font-semibold bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shrink-0 transition";
+          btn.className = "filter-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shrink-0 transition";
         }
       });
       renderStudentList();
@@ -618,7 +603,6 @@
       return `${d}_${c}_${s}`;
     }
 
-    // --- RENDER MAIN LIST & STATS ---
     function renderAll() {
       updateStats();
       renderStudentList();
@@ -670,7 +654,7 @@
 
       if (list.length === 0) {
         container.innerHTML = `
-          <div class="bg-white dark:bg-[#111827] rounded-2xl p-8 text-center border border-slate-200/80 dark:border-slate-800">
+          <div class="col-span-full bg-white dark:bg-[#111827] rounded-2xl p-8 text-center border border-slate-200/80 dark:border-slate-800">
             <p class="text-xs text-slate-400">Tidak ada siswa yang sesuai filter atau kelas masih kosong.</p>
           </div>`;
         return;
@@ -688,7 +672,6 @@
         return `
           <div class="bg-white dark:bg-[#111827] rounded-2xl p-3 border border-slate-200/80 dark:border-slate-800 shadow-2xs transition">
             <div class="flex items-center justify-between gap-2">
-              <!-- Info Siswa -->
               <div class="flex items-center gap-2.5 min-w-0 flex-1">
                 <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-[#1a2234] text-slate-500 dark:text-slate-400 text-xs font-bold flex items-center justify-center shrink-0">
                   ${idx + 1}
@@ -705,7 +688,6 @@
                 </div>
               </div>
 
-              <!-- Tombol H S I A Ergonomis -->
               <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
                 <button onclick="setAttendance('${st.id}', 'H')" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl font-bold text-xs transition ${btnStyle('H', 'bg-emerald-600')}">H</button>
                 <button onclick="setAttendance('${st.id}', 'S')" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl font-bold text-xs transition ${btnStyle('S', 'bg-amber-500')}">S</button>
@@ -714,7 +696,6 @@
               </div>
             </div>
 
-            <!-- Drawer Catatan (Muncul saat diklik atau sudah ada catatan) -->
             ${isNoteOpen ? `
               <div class="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
                 <input type="text" value="${rec.note || ''}" oninput="updateStudentNote('${st.id}', this.value)" placeholder="Tulis keterangan (misal: Terlambat 10m, Dispensasi...)" class="w-full h-8 px-2.5 rounded-lg bg-slate-50 dark:bg-[#1a2234] border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500">
@@ -725,12 +706,10 @@
       }).join('');
     };
 
-    // --- ATTENDANCE ACTIONS ---
     window.setAttendance = (studentId, status) => {
       const key = getCurrentKey();
       if (!appData.attendance[key]) appData.attendance[key] = {};
       const current = appData.attendance[key][studentId] || { status: '', note: '' };
-      // Toggle off if clicking same status
       current.status = current.status === status ? '' : status;
       appData.attendance[key][studentId] = current;
 
@@ -765,10 +744,9 @@
       const current = appData.attendance[key][studentId] || { status: '', note: '' };
       current.note = val;
       appData.attendance[key][studentId] = current;
-      saveData(false); // debounced cloud write
+      saveData(false);
     };
 
-    // --- ADD / DELETE CLASS & SUBJECT ---
     window.openAddPrompt = (type) => {
       addItemType = type;
       document.getElementById('modalAddTitle').textContent = type === 'class' ? 'Tambah Kelas Baru' : 'Tambah Mata Pelajaran';
@@ -825,7 +803,6 @@
       }
     };
 
-    // --- MANAGE MODAL ---
     window.switchManageTab = (tab) => {
       ['students', 'import', 'classes'].forEach(t => {
         document.getElementById(`mcontent-${t}`).classList.toggle('hidden', t !== tab);
@@ -913,7 +890,6 @@
       renderAll();
     };
 
-    // --- EXCEL IMPORT / EXPORT ---
     window.downloadExcelTemplate = () => {
       const ws = XLSX.utils.json_to_sheet([
         { NIS: "1001", Nama: "AHMAD FAUZAN", Kelas: "XI-DKV" },
@@ -957,7 +933,6 @@
       reader.readAsBinaryString(file);
     };
 
-    // --- REKAP & EXPORT ---
     window.openRekapModal = () => {
       const today = document.getElementById('inputDate').value;
       const firstDay = today.slice(0, 8) + '01';
@@ -1034,7 +1009,6 @@
       showToast("File Excel berhasil diunduh");
     };
 
-    // --- BACKUP & RESET ---
     window.exportBackupJSON = () => {
       const blob = new Blob([JSON.stringify(appData, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -1073,7 +1047,6 @@
       });
     };
 
-    // --- MODAL & TOAST HELPERS ---
     window.openModal = (id) => {
       if (id === 'modalManage') renderManageLists();
       const el = document.getElementById(id);
